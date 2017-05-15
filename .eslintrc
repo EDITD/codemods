@@ -1,0 +1,6 @@
+{
+  "extends": "edited",
+  "rules": {
+    "import/no-commonjs": 0
+  }
+}
