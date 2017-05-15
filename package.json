@@ -1,0 +1,43 @@
+{
+  "name": "codemods",
+  "version": "1.0.0",
+  "description": "Code for changing your code",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "prepublish": "npm run lint && npm run test"
+  },
+  "dependencies": {
+    "jscodeshift": "^0.3.30",
+    "path": "^0.12.7"
+  },
+  "jest": {
+    "globals": {
+      "baseDir": "../"
+    },
+    "testEnvironment": "node",
+    "testPathDirs": [
+      "transforms"
+    ]
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "babel-preset-es2015": "6.3.13",
+    "babel-preset-react": "6.3.13",
+    "babel-preset-stage-2": "6.3.13",
+    "eslint-config-edited": "^1.0.0",
+    "eslint": "^3.5.0",
+    "eslint-plugin-react": "^6.2.1",
+    "eslint-plugin-import": "^1.15.0",
+    "jest": "^17.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EDITD/codemods.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EDITD/codemods/issues"
+  },
+  "homepage": "https://github.com/EDITD/codemods#readme"
+}
