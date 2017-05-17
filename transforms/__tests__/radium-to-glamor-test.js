@@ -3,6 +3,7 @@ const tests = [
     "inline-style-to-component",
     "get-state",
     "keyframes",
+    "es6-class"
 ];
 
 const defineTest = require("jscodeshift/dist/testUtils").defineTest;
