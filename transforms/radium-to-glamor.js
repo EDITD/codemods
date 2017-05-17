@@ -21,6 +21,7 @@ export default function transformer(file, api) {
     const j = api.jscodeshift;
 
     const source = j(file.source);
+    const defaultImports = [];
     let cssCallCounter = 0;
 
 
@@ -38,8 +39,7 @@ export default function transformer(file, api) {
     });
 
 
-  // find all the imports
-    const imports = [];
+  // find all the defaultImports
     source
     .find(j.ImportDefaultSpecifier, {
         type: "ImportDefaultSpecifier",
@@ -48,7 +48,7 @@ export default function transformer(file, api) {
         },
     })
     .forEach((path) => {
-        imports.push(path.value.local.name);
+        defaultImports.push(path.value.local.name);
     });
 
 
@@ -63,7 +63,7 @@ export default function transformer(file, api) {
     .forEach((path) => {
         const identifier = path.parent.value.name.name;
 
-        if (identifier == null || (imports.indexOf(identifier) < 0 && isCapitalized(identifier))) {
+        if (identifier == null || defaultImports.indexOf(identifier) < 0 && isCapitalized(identifier)) {
             const text = `// TODO_RADIUM_TO_GLAMOR - JSX refers to ${identifier}, which is a variable. So wanted behaviour unknown.`;
             insertAtTopOfFile(source, j, text);
         }
