@@ -82,7 +82,6 @@ export default function transformer(file, api) {
         },
     })
     .filter(isJSXAttributeOfDOMComponent)
-    .filter((path) => path.value.value.expression.type !== "CallExpression")
     .forEach((path) => {
         cssCallCounter += 1;
         j(path).replaceWith(
@@ -127,56 +126,7 @@ export default function transformer(file, api) {
     );
   });
 
-
-  // Find style function calls outside
-    styleFunctions.forEach((styleFunction) => {
-        source.find(j.CallExpression, {
-            callee: {
-                type: "MemberExpression",
-                object: {
-                    type: "ThisExpression",
-                },
-                property: {
-                    type: "Identifier",
-                    name: styleFunction,
-                },
-            },
-        })
-    .filter((path) => path.parent.value.type !== "JSXSpreadAttribute")
-    .forEach(() => {
-        insertAtTopOfFile(source, j, `// TODO_RADIUM_TO_GLAMOR - call to this.${styleFunction} outside of style prop needs to be looked at`);
-    });
-    });
-
-  // Add css function to all style function return statements
-    source
-    .find(j.CallExpression, {
-        callee: {
-            type: "MemberExpression",
-            property: {
-                name: "createClass",
-            },
-        },
-    }).forEach((path) => {
-        j(path).find(j.Property).forEach((property) => {
-            const identifier = property.value.key.name;
-            if (styleFunctions.indexOf(identifier) >= 0) {
-                cssCallCounter++;
-                j(property).find(j.ReturnStatement).forEach((returnStatement) => {
-                    j(returnStatement).replaceWith(
-              j.returnStatement(
-                j.callExpression(
-                   j.identifier("css"),
-                   [returnStatement.value.argument]
-                )
-              )
-            );
-                });
-            }
-        });
-    });
-
-
+  // keyframes
     source.find(j.CallExpression, {
         callee: {
             type: "MemberExpression",
