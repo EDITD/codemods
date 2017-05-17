@@ -16,11 +16,21 @@ function insertAtTopOfFile(source, j, nodeToBeInserted) {
     .insertBefore(nodeToBeInserted);
 }
 
+function hasGlamorImport(source, j) {
+  return source.find(j.ImportDeclaration, {
+    source: {
+      type: 'Literal',
+      value: 'glamor',
+    }
+  }).length > 0;
+}
+
 
 export default function transformer(file, api) {
     const j = api.jscodeshift;
 
     const source = j(file.source);
+    const defaultImports = [];
     let cssCallCounter = 0;
 
 
@@ -38,8 +48,7 @@ export default function transformer(file, api) {
     });
 
 
-  // find all the imports
-    const imports = [];
+  // find all the defaultImports
     source
     .find(j.ImportDefaultSpecifier, {
         type: "ImportDefaultSpecifier",
@@ -48,7 +57,7 @@ export default function transformer(file, api) {
         },
     })
     .forEach((path) => {
-        imports.push(path.value.local.name);
+        defaultImports.push(path.value.local.name);
     });
 
 
@@ -63,7 +72,7 @@ export default function transformer(file, api) {
     .forEach((path) => {
         const identifier = path.parent.value.name.name;
 
-        if (identifier == null || (imports.indexOf(identifier) < 0 && isCapitalized(identifier))) {
+        if (identifier == null || defaultImports.indexOf(identifier) < 0 && isCapitalized(identifier)) {
             const text = `// TODO_RADIUM_TO_GLAMOR - JSX refers to ${identifier}, which is a variable. So wanted behaviour unknown.`;
             insertAtTopOfFile(source, j, text);
         }
@@ -82,7 +91,6 @@ export default function transformer(file, api) {
         },
     })
     .filter(isJSXAttributeOfDOMComponent)
-    .filter((path) => path.value.value.expression.type !== "CallExpression")
     .forEach((path) => {
         cssCallCounter += 1;
         j(path).replaceWith(
@@ -95,88 +103,7 @@ export default function transformer(file, api) {
       );
     });
 
-
-  // Find all style functions
-    const styleFunctions = [];
-    source
-  .find(j.JSXAttribute, {
-      name: {
-          type: "JSXIdentifier",
-          name: "style",
-      },
-      value: {
-          type: "JSXExpressionContainer",
-          expression: {
-              type: "CallExpression",
-              callee: {
-                  type: "MemberExpression",
-                  property: {
-                      type: "Identifier",
-                  },
-              },
-          },
-      },
-  })
- .filter(isJSXAttributeOfDOMComponent)
-  .forEach((path) => {
-      const functionName = path.value.value.expression.callee.property.name;
-      styleFunctions.push(functionName);
-
-      j(path).replaceWith(
-      j.jsxSpreadAttribute(path.node.value.expression)
-    );
-  });
-
-
-  // Find style function calls outside
-    styleFunctions.forEach((styleFunction) => {
-        source.find(j.CallExpression, {
-            callee: {
-                type: "MemberExpression",
-                object: {
-                    type: "ThisExpression",
-                },
-                property: {
-                    type: "Identifier",
-                    name: styleFunction,
-                },
-            },
-        })
-    .filter((path) => path.parent.value.type !== "JSXSpreadAttribute")
-    .forEach(() => {
-        insertAtTopOfFile(source, j, `// TODO_RADIUM_TO_GLAMOR - call to this.${styleFunction} outside of style prop needs to be looked at`);
-    });
-    });
-
-  // Add css function to all style function return statements
-    source
-    .find(j.CallExpression, {
-        callee: {
-            type: "MemberExpression",
-            property: {
-                name: "createClass",
-            },
-        },
-    }).forEach((path) => {
-        j(path).find(j.Property).forEach((property) => {
-            const identifier = property.value.key.name;
-            if (styleFunctions.indexOf(identifier) >= 0) {
-                cssCallCounter++;
-                j(property).find(j.ReturnStatement).forEach((returnStatement) => {
-                    j(returnStatement).replaceWith(
-              j.returnStatement(
-                j.callExpression(
-                   j.identifier("css"),
-                   [returnStatement.value.argument]
-                )
-              )
-            );
-                });
-            }
-        });
-    });
-
-
+  // keyframes
     source.find(j.CallExpression, {
         callee: {
             type: "MemberExpression",
@@ -230,9 +157,10 @@ export default function transformer(file, api) {
 
 
   // import glamor where needed
-    if (cssCallCounter > 0) {
+    if (cssCallCounter > 0 && !hasGlamorImport(source, j)) {
         insertAtTopOfFile(source, j, "import { css } from \"glamor\";");
     }
+
 
   // Remove Radium import
     source

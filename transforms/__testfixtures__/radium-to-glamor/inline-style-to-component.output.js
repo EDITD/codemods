@@ -10,18 +10,18 @@ const InlineStyles = React.createClass({
     },
 
     getStyles() {
-        return css({
+        return {
             borderWidth: 1,
             borderColor: "red",
             borderStyle: "solid",
-        });
+        };
     },
 
     render() {
         const { ComponentClass } = this.props;
 
         return (
-            <div {...this.getStyles()}>
+            <div {...css(this.getStyles())}>
                 <Button style={{ background: "blue" }}>
                     Hello
                 </Button>
