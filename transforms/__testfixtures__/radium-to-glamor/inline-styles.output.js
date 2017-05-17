@@ -1,4 +1,3 @@
-// TODO_RADIUM_TO_GLAMOR - call to this.getStyles outside of style prop needs to be looked at
 import { css } from "glamor";
 import React from "react";
 
@@ -17,23 +16,18 @@ const InlineStyles = React.createClass({
             width: 100,
         };
 
-        return css([
+        return [
             styles,
             this.props.style,
-        ]);
+        ];
     },
 
     render() {
-        const heyWidth = this.getStyles().width;
-
         return (
-            <div {...this.getStyles()}>
+            <div {...css(this.getStyles())}>
                 <div {...css(this.props.style)}>
                     <span {...css({ background: "blue" })}>
                         Hello
-                    </span>
-                    <span {...css({ width: heyWidth })}>
-                        world
                     </span>
                 </div>
             </div>

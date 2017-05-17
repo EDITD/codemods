@@ -23,16 +23,11 @@ const InlineStyles = React.createClass({
     },
 
     render() {
-        const heyWidth = this.getStyles().width;
-
         return (
             <div style={this.getStyles()}>
                 <div style={this.props.style}>
                     <span style={{ background: "blue" }}>
                         Hello
-                    </span>
-                    <span style={{ width: heyWidth }}>
-                        world
                     </span>
                 </div>
             </div>
