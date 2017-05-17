@@ -94,38 +94,6 @@ export default function transformer(file, api) {
       );
     });
 
-
-  // Find all style functions
-    const styleFunctions = [];
-    source
-  .find(j.JSXAttribute, {
-      name: {
-          type: "JSXIdentifier",
-          name: "style",
-      },
-      value: {
-          type: "JSXExpressionContainer",
-          expression: {
-              type: "CallExpression",
-              callee: {
-                  type: "MemberExpression",
-                  property: {
-                      type: "Identifier",
-                  },
-              },
-          },
-      },
-  })
- .filter(isJSXAttributeOfDOMComponent)
-  .forEach((path) => {
-      const functionName = path.value.value.expression.callee.property.name;
-      styleFunctions.push(functionName);
-
-      j(path).replaceWith(
-      j.jsxSpreadAttribute(path.node.value.expression)
-    );
-  });
-
   // keyframes
     source.find(j.CallExpression, {
         callee: {
