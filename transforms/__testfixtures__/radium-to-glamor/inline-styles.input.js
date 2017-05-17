@@ -1,3 +1,4 @@
+import { css } from "glamor";
 import React from "react";
 import Radium from "radium";
 
@@ -25,7 +26,7 @@ const InlineStyles = React.createClass({
     render() {
         return (
             <div style={this.getStyles()}>
-                <div style={this.props.style}>
+                <div {...css(this.props.style)}>
                     <span style={{ background: "blue" }}>
                         Hello
                     </span>
