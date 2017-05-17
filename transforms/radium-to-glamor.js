@@ -16,6 +16,15 @@ function insertAtTopOfFile(source, j, nodeToBeInserted) {
     .insertBefore(nodeToBeInserted);
 }
 
+function hasGlamorImport(source, j) {
+  return source.find(j.ImportDeclaration, {
+    source: {
+      type: 'Literal',
+      value: 'glamor',
+    }
+  }).length > 0;
+}
+
 
 export default function transformer(file, api) {
     const j = api.jscodeshift;
@@ -148,9 +157,10 @@ export default function transformer(file, api) {
 
 
   // import glamor where needed
-    if (cssCallCounter > 0) {
+    if (cssCallCounter > 0 && !hasGlamorImport(source, j)) {
         insertAtTopOfFile(source, j, "import { css } from \"glamor\";");
     }
+
 
   // Remove Radium import
     source
