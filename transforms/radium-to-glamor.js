@@ -17,12 +17,12 @@ function insertAtTopOfFile(source, j, nodeToBeInserted) {
 }
 
 function hasGlamorImport(source, j) {
-  return source.find(j.ImportDeclaration, {
-    source: {
-      type: 'Literal',
-      value: 'glamor',
-    }
-  }).length > 0;
+    return source.find(j.ImportDeclaration, {
+        source: {
+            type: "Literal",
+            value: "glamor",
+        },
+    }).length > 0;
 }
 
 
