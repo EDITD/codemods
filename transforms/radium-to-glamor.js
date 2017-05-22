@@ -158,7 +158,19 @@ export default function transformer(file, api) {
 
   // import glamor where needed
     if (cssCallCounter > 0 && !hasGlamorImport(source, j)) {
-        insertAtTopOfFile(source, j, "import { css } from \"glamor\";");
+        insertAtTopOfFile(
+            source,
+            j,
+            j.importDeclaration(
+                [
+                    j.importSpecifier(
+                        j.identifier("css"),
+                        j.identifier("css")
+                    ),
+                ],
+                j.literal("glamor")
+            )
+        );
     }
 
 
