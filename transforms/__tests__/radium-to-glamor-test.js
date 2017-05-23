@@ -3,7 +3,8 @@ const tests = [
     "inline-style-to-component",
     "get-state",
     "keyframes",
-    "es6-class"
+    "es6-class",
+    "this-props-spread",
 ];
 
 const defineTest = require("jscodeshift/dist/testUtils").defineTest;
