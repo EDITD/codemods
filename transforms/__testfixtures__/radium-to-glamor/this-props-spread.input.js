@@ -28,13 +28,13 @@ const Spreader = React.createClass({
                     {...this.props}
                     otherProp={true}
                 >
-                  NO DANGER BECAUSE NO STYLE
+                    DANGER BECAUSE DOM AND SPREAD
                 </li>
                 <OtherClass
                     {...this.props}
                     otherProp={true}
                 >
-                  NO DANGER BECAUSE NO STYLE
+                    DANGER BECAUSE VARIABLE AND SPREAD
                 </OtherClass>
             </ComponentClass>
         );

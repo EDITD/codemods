@@ -1,6 +1,8 @@
 // TODO_RADIUM_TO_GLAMOR - JSX refers to ComponentClass, which is a variable. So wanted behaviour unknown.
-// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, ComponentClass, contains a spread which references this.props, followed by a style prop. It's not safe to assume that this is safe because the style prop has been removed
-// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, div, contains a spread which references this.props, followed by a style prop. It's not safe to assume that this is safe because the style prop has been removed
+// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, ComponentClass, contains a spread which references this.props. It's not safe to assume that this is safe because it might contain a style prop that'll no longer be reconciled by Radium
+// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, div, contains a spread which references this.props. It's not safe to assume that this is safe because it might contain a style prop that'll no longer be reconciled by Radium
+// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, li, contains a spread which references this.props. It's not safe to assume that this is safe because it might contain a style prop that'll no longer be reconciled by Radium
+// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, OtherClass, contains a spread which references this.props. It's not safe to assume that this is safe because it might contain a style prop that'll no longer be reconciled by Radium
 import { css } from "glamor";
 import React from "react";
 import OtherComponent from "./OtherComponent";
@@ -28,13 +30,13 @@ const Spreader = React.createClass({
                     {...this.props}
                     otherProp={true}
                 >
-                  NO DANGER BECAUSE NO STYLE
+                    DANGER BECAUSE DOM AND SPREAD
                 </li>
                 <OtherClass
                     {...this.props}
                     otherProp={true}
                 >
-                  NO DANGER BECAUSE NO STYLE
+                    DANGER BECAUSE VARIABLE AND SPREAD
                 </OtherClass>
             </ComponentClass>
         );

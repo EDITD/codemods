@@ -108,19 +108,11 @@ export default function transformer(file, api) {
             return;
         }
 
-        const siblingAttributes = path.parentPath.node.attributes;
-        const indexOfSpread = siblingAttributes.indexOf(path.value);
-        const postSpreadSiblings = siblingAttributes.slice(indexOfSpread + 1);
-        const styleAttributesPostSpread = j(postSpreadSiblings).filter((siblingPath) => {
-            const { value } = siblingPath;
-            return value.type === "JSXAttribute" && value.name.name === "style";
-        });
 
-        if (styleAttributesPostSpread.length > 0) {
-            const componentName = path.parentPath.node.name.name;
-            const text = `// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, ${componentName}, contains a spread which references this.props, followed by a style prop. It's not safe to assume that this is safe because the style prop has been removed`;
-            insertAtTopOfFile(source, j, text);
-        }
+        const componentName = path.parentPath.node.name.name;
+        const text = `// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, ${componentName}, contains a spread which references this.props. It's not safe to assume that this is safe because it might contain a style prop that'll no longer be reconciled by Radium`;
+        insertAtTopOfFile(source, j, text);
+
     });
 
 
