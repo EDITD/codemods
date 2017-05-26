@@ -8,7 +8,7 @@ This repository contains a codemod script for converting React codebases from Ra
   * `git clone https://github.com/EDITD/codemods.git` or download a zip file
     from `https://github.com/EDITD/codemods/archive/master.zip`
   * Run `npm install` or `yarn` in the codemods directory
-  * `jscodeshift -t <codemod-script> <path>`
+  * `jscodeshift -t <codemod-script> <path> --parser=flow --extensions=js,jsx`
   * Use the `-d` option for a dry-run and use `-p` to print the output
     for comparison
 
