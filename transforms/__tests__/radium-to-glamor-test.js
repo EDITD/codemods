@@ -4,6 +4,7 @@ const tests = [
     "get-state",
     "keyframes",
     "es6-class",
+    "this-props-spread",
 ];
 
 const defineTest = require("jscodeshift/dist/testUtils").defineTest;

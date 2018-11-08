@@ -26,7 +26,7 @@ const InlineStyles = React.createClass({
     render() {
         return (
             <div style={this.getStyles()}>
-                <div {...css(this.props.style)}>
+                <div {...css({ marginLeft: 10 })}>
                     <span style={{ background: "blue" }}>
                         Hello
                     </span>

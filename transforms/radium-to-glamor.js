@@ -4,9 +4,18 @@ function isCapitalized(node) {
     return firstCharacter.toUpperCase() === firstCharacter;
 }
 
+function getJSXComponentNameFromAttributePath(path) {
+    return path.parent.value.name.name;
+}
+
 function isJSXAttributeOfDOMComponent(path) {
-    const identifier = path.parent.value.name.name;
-    return identifier != null && !isCapitalized(identifier);
+    const name = getJSXComponentNameFromAttributePath(path);
+    return name != null && !isCapitalized(name);
+}
+
+function isJSXAttributeOfVariableComponent(path, defaultImports) {
+    const name = getJSXComponentNameFromAttributePath(path);
+    return name == null || (defaultImports.indexOf(name) < 0 && isCapitalized(name));
 }
 
 function insertAtTopOfFile(source, j, nodeToBeInserted) {
@@ -70,12 +79,40 @@ export default function transformer(file, api) {
         },
     })
     .forEach((path) => {
-        const identifier = path.parent.value.name.name;
-
-        if (identifier == null || defaultImports.indexOf(identifier) < 0 && isCapitalized(identifier)) {
+        if (isJSXAttributeOfVariableComponent(path, defaultImports)) {
+            const identifier = getJSXComponentNameFromAttributePath(path);
             const text = `// TODO_RADIUM_TO_GLAMOR - JSX refers to ${identifier}, which is a variable. So wanted behaviour unknown.`;
             insertAtTopOfFile(source, j, text);
         }
+    });
+
+  // Find any spread of this.props that can't be statically analysed and warn about it
+    source
+    .find(j.JSXSpreadAttribute)
+    .filter((path) => (
+        isJSXAttributeOfDOMComponent(path) ||
+        isJSXAttributeOfVariableComponent(path, defaultImports)
+    ))
+    .forEach((path) => {
+        const thisPropsDescendents = j(path).find(j.MemberExpression, {
+            object: {
+                type: "ThisExpression",
+            },
+            property: {
+                type: "Identifier",
+                name: "props",
+            },
+        });
+
+        if (thisPropsDescendents.length === 0) {
+            return;
+        }
+
+
+        const componentName = path.parentPath.node.name.name;
+        const text = `// TODO_RADIUM_TO_GLAMOR - In JSX the props for component, ${componentName}, contains a spread which references this.props. It's not safe to assume that this is safe because it might contain a style prop that'll no longer be reconciled by Radium`;
+        insertAtTopOfFile(source, j, text);
+
     });
 
 
